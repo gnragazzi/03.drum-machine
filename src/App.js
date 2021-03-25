@@ -1,23 +1,24 @@
 import React from 'react'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import data from './data'
+import DrumPad from './drum-pad'
 
 function App() {
   const [innerText, setInnerText] = useState('')
-  const displayRef = useRef(null)
-  // const [key]
   const handleKeyDown = (e) => {
     const key = e.key.toUpperCase()
     const audioDom = document.getElementById(key)
     if (audioDom) {
       const text = audioDom.dataset.label
-      setInnerText(text)
       audioDom.play()
+      setInnerText(text)
     }
   }
 
   const handleClick = (e) => {
     e.currentTarget.children[0].play()
+    const text = e.currentTarget.id
+    setInnerText(text)
   }
 
   useEffect(() => {
@@ -26,29 +27,14 @@ function App() {
   })
 
   return (
-    <main id='drum-machine' onKeyPress={() => console.log('pressed key')}>
-      <article>
-        {data.map(({ name, url, label }, index) => {
-          return (
-            <button
-              key={index}
-              className='drum-pad'
-              id={label}
-              onClick={handleClick}
-            >
-              <audio
-                id={name}
-                className='clip'
-                src={url}
-                data-label={`${label}`}
-              ></audio>
-              {name}
-            </button>
-          )
-        })}
-        <h1 id='display' ref={displayRef}>
-          {innerText}
-        </h1>
+    <main>
+      <article id='drum-machine'>
+        <div className='drum-container'>
+          {data.map((item, index) => {
+            return <DrumPad key={index} {...item} handleClick={handleClick} />
+          })}
+        </div>
+        <h1 id='display'>{innerText || ''}</h1>
       </article>
     </main>
   )
